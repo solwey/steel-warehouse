@@ -1,0 +1,88 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccessRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  image         String?
+  display_name  String?    @db.VarChar
+  password_hash String?    @db.Text
+  access_role   AccessRole @default(USER)
+
+  incomingEmails IncomingEmail[]
+
+  @@unique([id, email])
+  @@map(name: "users")
+}
+
+model Material {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  name       String
+  standard   String?
+  category   String?
+  unit       String?
+  created_at DateTime @default(now())
+
+  inventoryItems InventoryItem[]
+  needs          NecessaryMaterials[]
+
+  @@map(name: "materials")
+}
+
+model InventoryItem {
+  id         String   @id @default(cuid())
+  quantity   Float
+  location   String?
+  updated_at DateTime @updatedAt
+
+  material_id String
+  material    Material @relation(fields: [material_id], references: [id])
+
+  @@map(name: "inventory_items")
+}
+
+model NecessaryMaterials {
+  id       String    @id @default(cuid())
+  quantity Float
+  priority Int       @default(0)
+  deadline DateTime?
+
+  material_id String
+  material    Material @relation(fields: [material_id], references: [id])
+
+  @@map(name: "necessary_materials")
+}
+
+model IncomingEmail {
+  id         String      @id @default(cuid())
+  subject    String
+  sender     String
+  body       String
+  receivedAt DateTime    @default(now())
+  status     EmailStatus @default(UNREAD)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map(name: "incoming_emails")
+}
+
+enum EmailStatus {
+  UNREAD
+  READ
+  PROCESSED
+}
