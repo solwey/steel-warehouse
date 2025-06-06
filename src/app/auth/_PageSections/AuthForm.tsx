@@ -19,6 +19,7 @@ import {
   RegisterFormValues
 } from '@/lib/types/validations';
 import { toast } from 'react-toastify';
+import { setAuthenticated, setUser } from '@/lib/utils/auth';
 
 interface AuthFormPropsI {
   submit_text: string;
@@ -52,6 +53,7 @@ export default function AuthForm({ submit_text, auth_flow }: AuthFormPropsI) {
           email: values.email,
           password: values.password
         });
+        toast.success('Registration successful! Please log in.');
         router.push(routes.redirects.auth.toLogin);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
@@ -66,6 +68,10 @@ export default function AuthForm({ submit_text, auth_flow }: AuthFormPropsI) {
           email: values.email,
           password: values.password
         });
+        setAuthenticated(true);
+        console.log('Login response:', res.data);
+        setUser(res.data.user);
+        toast.success('Login successful');
         router.push(routes.redirects.user.toUserDashboard);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {

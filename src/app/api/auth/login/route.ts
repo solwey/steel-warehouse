@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || 'secret';
+import prisma from '@/lib/db/prisma';
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
@@ -23,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Incorrect password' }, { status: 401 });
   }
 
-  const token = sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+  const { password_hash, ...userWithoutPassword } = user;
 
-  return NextResponse.json({ token });
+  return NextResponse.json({ user: userWithoutPassword });
 }

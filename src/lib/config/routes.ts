@@ -1,17 +1,18 @@
 const routes = {
   routes_user: [
-    { title: 'Dashboard', link: '/user/dashboard' },
-    { title: 'Inventory', link: '/user/inventory' },
-    { title: 'Necessary Materials', link: '/user/necessary-materials' },
-    { title: 'Users', link: '/user/users' },
-    { title: 'Settings', link: '/user/settings' }
+    { title: 'Dashboard', link: '/dashboard' },
+    { title: 'Inventory', link: '/inventory' },
+    { title: 'Necessary Materials', link: '/necessary-materials' },
+    { title: 'Users', link: '/users' },
+    { title: 'Settings', link: '/settings' }
   ],
   redirects: {
     auth: {
-      toLogin: '/auth/login'
+      toLogin: '/auth/login',
+      toRegister: '/auth/signup'
     },
     user: {
-      toUserDashboard: '/user/dashboard'
+      toUserDashboard: '/dashboard'
     }
   },
   footer_nav: {

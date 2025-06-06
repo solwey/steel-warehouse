@@ -9,6 +9,7 @@ import {
 import Link from 'next/link';
 
 import AuthForm from '../_PageSections/AuthForm';
+import routes from '@/lib/config/routes';
 
 export default async function Login() {
   return (
@@ -26,7 +27,10 @@ export default async function Login() {
           <div className="flex flex-col">
             <div className="text-center text-sm text-gray-500">
               Not a member?{' '}
-              <Link href="/auth/signup" className="leading-7 text-indigo-600 hover:text-indigo-500">
+              <Link
+                href={routes.redirects.auth.toRegister}
+                className="leading-7 text-indigo-600 hover:text-indigo-500"
+              >
                 Sign up now.
               </Link>
             </div>
