@@ -8,8 +8,7 @@ const routes = {
   ],
   redirects: {
     auth: {
-      toLogin: '/auth/login',
-      toRegister: '/auth/signup'
+      toLogin: '/auth/login'
     },
     user: {
       toUserDashboard: '/dashboard'

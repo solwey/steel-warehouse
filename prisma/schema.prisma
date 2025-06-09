@@ -73,7 +73,7 @@ model IncomingEmail {
   sender     String
   body       String
   receivedAt DateTime    @default(now())
-  status     EmailStatus @default(UNREAD)
+  status     EmailStatus @default(UNREADED)
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
@@ -82,7 +82,7 @@ model IncomingEmail {
 }
 
 enum EmailStatus {
-  UNREAD
-  READ
+  UNREADED
+  READED
   PROCESSED
 }

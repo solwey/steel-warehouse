@@ -26,13 +26,7 @@ export default async function Login() {
         <CardFooter>
           <div className="flex flex-col">
             <div className="text-center text-sm text-gray-500">
-              Not a member?{' '}
-              <Link
-                href={routes.redirects.auth.toRegister}
-                className="leading-7 text-indigo-600 hover:text-indigo-500"
-              >
-                Sign up now.
-              </Link>
+              Haven't account? Сontact the administrator.
             </div>
           </div>
         </CardFooter>

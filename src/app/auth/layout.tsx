@@ -2,11 +2,8 @@ import { MainLogoText } from '@/components/MainLogo';
 import { Separator } from '@/components/ui/Separator';
 import { LayoutProps } from '@/lib/types/types';
 import { ThemeDropDownMenu } from '../../components/ThemeDropdown';
-import Footer from '@/components/Footer';
 
 export default async function AuthLayout({ children }: LayoutProps) {
-  //if logged in and not onboarding redirect
-
   return (
     <div className="min-h-screen flex flex-col">
       <header className="p-6 mb-4">
@@ -17,7 +14,6 @@ export default async function AuthLayout({ children }: LayoutProps) {
         <Separator />
       </header>
       <main className="grid justify-center items-center flex-1">{children}</main>
-      <Footer />
     </div>
   );
 }

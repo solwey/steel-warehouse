@@ -9,9 +9,8 @@ import {
   navigationMenuTriggerStyle
 } from '@/components/ui/Navigation';
 
-import Link from 'next/link';
-
 import { MobileNav, NavProps } from '@/components/MobileNav';
+import Link from 'next/link';
 
 export const Nav = ({ items }: NavProps) => {
   return (
@@ -20,7 +19,7 @@ export const Nav = ({ items }: NavProps) => {
         <NavigationMenuList>
           {items.map((item) => (
             <NavigationMenuItem key={item.title}>
-              <Link href={item.link} legacyBehavior passHref>
+              <Link href={item.link} passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                   {item.title}
                 </NavigationMenuLink>
