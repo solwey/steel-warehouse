@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = await params;
   const user = await prisma.user.findFirst({
     where: {
-      id: params.id
+      id
     }
   });
 
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = await params;
   const body = await request.json();
   const { name, email, password, role, display_name } = body;
 
@@ -27,7 +29,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     where: { email }
   });
 
-  if (existingUser && existingUser.id !== params.id) {
+  if (existingUser && existingUser.id !== id) {
     return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
   }
 
@@ -47,7 +49,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 
   const updatedUser = await prisma.user.update({
-    where: { id: params.id },
+    where: { id },
     data: updateData
   });
 

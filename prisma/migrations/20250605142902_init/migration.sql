@@ -2,7 +2,7 @@
 CREATE TYPE "AccessRole" AS ENUM ('USER', 'ADMIN');
 
 -- CreateEnum
-CREATE TYPE "EmailStatus" AS ENUM ('UNREAD', 'READ', 'PROCESSED');
+CREATE TYPE "EmailStatus" AS ENUM ('UNREADED', 'READED', 'PROCESSED');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -59,8 +59,7 @@ CREATE TABLE "incoming_emails" (
     "sender" TEXT NOT NULL,
     "body" TEXT NOT NULL,
     "receivedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "status" "EmailStatus" NOT NULL DEFAULT 'UNREAD',
-    "userId" TEXT NOT NULL,
+    "status" "EmailStatus" NOT NULL DEFAULT 'UNREADED',
 
     CONSTRAINT "incoming_emails_pkey" PRIMARY KEY ("id")
 );
@@ -80,5 +79,7 @@ ALTER TABLE "inventory_items" ADD CONSTRAINT "inventory_items_material_id_fkey" 
 -- AddForeignKey
 ALTER TABLE "necessary_materials" ADD CONSTRAINT "necessary_materials_material_id_fkey" FOREIGN KEY ("material_id") REFERENCES "materials"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "incoming_emails" ADD CONSTRAINT "incoming_emails_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+INSERT INTO "users" ("id", "name", "email", "password_hash", "access_role")
+VALUES
+    ('user-uuid', 'User', 'user@user.com', '$2b$12$IrlS1JorPtF28W0r6DWeduGb5FoHZ5WS8WTQihRVkjX3Ej.NuweN2', 'USER'),
+    ('admin-uuid', 'Admin', 'admin@admin.com', '$2b$12$IrlS1JorPtF28W0r6DWeduGb5FoHZ5WS8WTQihRVkjX3Ej.NuweN2', 'ADMIN');

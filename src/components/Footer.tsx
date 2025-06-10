@@ -26,7 +26,7 @@ export default function Footer() {
                       <Link
                         href={item.link}
                         className="text-sm leading-6 text-gray-300 hover:text-white"
-                      >
+                        legacyBehavior>
                         {item.title}
                       </Link>
                     </li>
@@ -43,7 +43,7 @@ export default function Footer() {
                       <Link
                         href={item.link}
                         className="text-sm leading-6 text-gray-300 hover:text-white"
-                      >
+                        legacyBehavior>
                         {item.title}
                       </Link>
                     </li>
@@ -62,7 +62,7 @@ export default function Footer() {
                       <Link
                         href={item.link}
                         className="text-sm leading-6 text-gray-300 hover:text-white"
-                      >
+                        legacyBehavior>
                         {item.title}
                       </Link>
                     </li>
@@ -99,13 +99,25 @@ export default function Footer() {
           </p>
           <div className="text-white py-4 justify-self-center">
             <div className="flex items-end">
-              <Link href={configuration.links.twitter} target="_blank" rel="noopener noreferrer">
+              <Link
+                href={configuration.links.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                legacyBehavior>
                 <SocialIcons.Twitter className="mx-8" size={24} />
               </Link>
-              <Link href={configuration.links.github} target="_blank" rel="noopener noreferrer">
+              <Link
+                href={configuration.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                legacyBehavior>
                 <SocialIcons.Github className="mx-8" size={24} />
               </Link>
-              <Link href={configuration.links.linkedin} target="_blank" rel="noopener noreferrer">
+              <Link
+                href={configuration.links.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                legacyBehavior>
                 <SocialIcons.Linkedin className="mx-8" size={24} />
               </Link>
             </div>

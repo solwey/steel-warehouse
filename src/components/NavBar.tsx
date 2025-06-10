@@ -19,7 +19,7 @@ export const Nav = ({ items }: NavProps) => {
         <NavigationMenuList>
           {items.map((item) => (
             <NavigationMenuItem key={item.title}>
-              <Link href={item.link} passHref>
+              <Link href={item.link} passHref legacyBehavior>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                   {item.title}
                 </NavigationMenuLink>

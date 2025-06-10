@@ -5,6 +5,10 @@ import { notFound } from 'next/navigation';
 import { PiMicrosoftExcelLogoLight, PiMicrosoftWordLogoLight } from 'react-icons/pi';
 import { GoFileZip } from 'react-icons/go';
 import { FaRegFile } from 'react-icons/fa';
+import MailClientDetail from './mail-detail';
+import EmailTextSection from './mail-text';
+import axios from 'axios';
+import { error } from 'console';
 
 interface Props {
   params: { id: string };
@@ -43,6 +47,15 @@ export default async function MailDetailPage({ params }: Props) {
 
   const filePath = path.join(process.cwd(), 'public/mock-data/income-mails', `${id}.eml`);
   const attachmentsDir = path.join(process.cwd(), 'public/eml-attachments', id);
+  const responseDir = path.join(
+    process.cwd(),
+    'public/mock-data/response-examples',
+    `response-${id}`
+  );
+
+  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000';
+  const response = await axios.get(`${baseUrl}/api/mails/${id}`);
+  const data = response.data;
 
   try {
     const content = await fs.readFile(filePath, 'utf-8');
@@ -60,6 +73,20 @@ export default async function MailDetailPage({ params }: Props) {
       }
     }
 
+    let excelFiles: { filename: string; url: string }[] = [];
+    try {
+      const files = await fs.readdir(responseDir);
+      excelFiles = files
+        .filter((file) => /\.(xls|xlsx)$/i.test(file))
+        .map((file) => ({
+          filename: file,
+          url: `public/mock-data/response-examples/response-${id}/${file}`
+        }));
+    } catch (error) {
+      console.error('Error reading response directory:', error);
+      excelFiles = [];
+    }
+
     return (
       <div className="p-6 max-w-3xl">
         <h1 className="text-xl font-bold mb-2">{mail.subject || '(No subject)'}</h1>
@@ -70,8 +97,8 @@ export default async function MailDetailPage({ params }: Props) {
         <p className="mb-2">
           <strong>To:</strong> {mail.to?.text ?? 'Unknown'}
         </p>
-        <div className="border-t pt-4 mt-4 whitespace-pre-wrap">
-          {cleanEmailText(mail.text ?? '[No content]')}
+        <div className="border-t pt-4 mt-4">
+          <EmailTextSection text={cleanEmailText(mail.text ?? '[No content]')} />
         </div>
         {mail.attachments.length > 0 && (
           <div className="mt-6">
@@ -111,6 +138,16 @@ export default async function MailDetailPage({ params }: Props) {
             </div>
           </div>
         )}
+
+        <div className="border-t pt-4 mt-4">
+          <h1 className="text-xl font-bold mb-2">Suggested reply:</h1>
+          <MailClientDetail
+            id={id}
+            status={data.status}
+            excelFiles={excelFiles}
+            response={data.response}
+          />
+        </div>
       </div>
     );
   } catch {

@@ -9,6 +9,7 @@ export function setAuthenticated(value: boolean): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem('isAuthenticated', value ? 'true' : 'false');
 }
+
 export function setUser(user: User): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem('user', JSON.stringify(user));

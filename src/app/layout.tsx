@@ -2,7 +2,6 @@ import '../styles/globals.css';
 import { InterFont } from '@/styles/fonts';
 import { ThemeProvider } from '@/styles/ThemeProvider';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
 import NextTopLoader from 'nextjs-toploader';
 import config from '@/lib/config/site';
 import { SpeedInsights } from '@vercel/speed-insights/next';

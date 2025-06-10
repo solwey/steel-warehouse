@@ -1,7 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { simpleParser, ParsedMail as MailParserParsedMail, AddressObject } from 'mailparser';
-import { EmailStatus } from '@prisma/client';
+import { EmailStatus, IncomingEmail } from '@prisma/client';
+import axios from 'axios';
 
 export interface ParsedMailAttachment {
   filename: string;
@@ -45,17 +46,41 @@ export async function loadEmlMessages(): Promise<ParsedMail[]> {
     try {
       const parsed: MailParserParsedMail = await simpleParser(content);
 
-      const statuses = Object.values(EmailStatus);
-      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      const id = file.replace('.eml', '');
+
+      const baseUrl = process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000';
+      let email: IncomingEmail | null = null;
+      try {
+        const response = await axios.get(`${baseUrl}/api/mails/${id}`);
+        email = response.data;
+      } catch {
+        try {
+          const createResponse = await axios.post(`${baseUrl}/api/mails`, {
+            id: id,
+            subject: parsed.subject || '',
+            sender: extractAddress(parsed.from),
+            body: parsed.text || '',
+            status: EmailStatus.UNREADED
+          });
+
+          email = createResponse.data;
+        } catch (createErr: any) {
+          if (createErr.response) {
+            console.error(`Failed to create email for ${id}:`, createErr.response.data);
+          } else {
+            console.error(`Failed to create email for ${id}`, createErr);
+          }
+        }
+      }
 
       parsedMails.push({
-        id: file.replace('.eml', ''),
+        id: id,
         from: extractAddress(parsed.from),
         to: extractAddress(parsed.to),
         date: parsed.date ? parsed.date.toISOString() : '',
         subject: parsed.subject || '',
         bodySnippet: (parsed.text || '').slice(0, 200) + '...',
-        status: randomStatus
+        status: email?.status || EmailStatus.UNREADED
       });
     } catch (e) {
       console.error(`Failed to parse ${file}`, e);

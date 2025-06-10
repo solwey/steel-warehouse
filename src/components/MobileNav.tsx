@@ -19,11 +19,11 @@ export interface NavProps {
 
 const MobileNavItem = ({ title, link }: NavItem) => {
   const pathname = usePathname();
-  const href = `${routes.redirects.dashboard.dashboardBase}${pathname.split('/')[2]}${link}`;
+  const href = `${routes.redirects.user.toUserDashboard}${pathname.split('/')[2]}${link}`;
 
   return (
     <DropdownMenuItem className="flex justify-center">
-      <Link className="p-4 text-xl font-semi-bold text-center" href={href}>
+      <Link className="p-4 text-xl font-semi-bold text-center" href={href} legacyBehavior>
         {title}
       </Link>
     </DropdownMenuItem>

@@ -22,8 +22,6 @@ model User {
   password_hash String?    @db.Text
   access_role   AccessRole @default(USER)
 
-  incomingEmails IncomingEmail[]
-
   @@unique([id, email])
   @@map(name: "users")
 }
@@ -74,9 +72,7 @@ model IncomingEmail {
   body       String
   receivedAt DateTime    @default(now())
   status     EmailStatus @default(UNREADED)
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  response   String?
 
   @@map(name: "incoming_emails")
 }
