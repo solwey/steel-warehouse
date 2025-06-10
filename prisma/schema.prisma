@@ -27,42 +27,62 @@ model User {
 }
 
 model Material {
-  id         String   @id @default(cuid())
-  code       String   @unique
-  name       String
-  standard   String?
-  category   String?
-  unit       String?
-  created_at DateTime @default(now())
+  id                   String  @id @default(cuid())
+  name                 String
+  grade                String
+  description          String?
+  chemical_composition Json?
 
-  inventoryItems InventoryItem[]
-  needs          NecessaryMaterials[]
+  inventoryItems     InventoryItem[]
+  necessaryMaterials NecessaryMaterial[]
 
-  @@map(name: "materials")
+  @@map(name: "material")
+}
+
+enum InventoryStatus {
+  available
+  reserved
+  used
+  scrap
 }
 
 model InventoryItem {
-  id         String   @id @default(cuid())
-  quantity   Float
-  location   String?
-  updated_at DateTime @updatedAt
-
-  material_id String
+  id          String   @id @default(cuid())
   material    Material @relation(fields: [material_id], references: [id])
+  material_id String
 
-  @@map(name: "inventory_items")
+  coil_number   String?
+  thickness     Float
+  width         Float
+  weight        Float
+  location      String
+  supplier      String
+  date_received DateTime
+  status        InventoryStatus
+  comment       String?
+
+  @@map(name: "inventory_item")
 }
 
-model NecessaryMaterials {
-  id       String    @id @default(cuid())
-  quantity Float
-  priority Int       @default(0)
-  deadline DateTime?
+enum UrgencyLevel {
+  low
+  medium
+  high
+}
 
-  material_id String
+model NecessaryMaterial {
+  id          String   @id @default(cuid())
   material    Material @relation(fields: [material_id], references: [id])
+  material_id String
 
-  @@map(name: "necessary_materials")
+  required_thickness Float
+  required_width     Float
+  required_weight    Float
+  urgency            UrgencyLevel
+  due_date           DateTime
+  comment            String?
+
+  @@map(name: "necessary_material")
 }
 
 model IncomingEmail {
