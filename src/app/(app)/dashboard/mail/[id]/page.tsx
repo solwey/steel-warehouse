@@ -5,10 +5,9 @@ import { notFound } from 'next/navigation';
 import { PiMicrosoftExcelLogoLight, PiMicrosoftWordLogoLight } from 'react-icons/pi';
 import { GoFileZip } from 'react-icons/go';
 import { FaRegFile } from 'react-icons/fa';
-import MailClientDetail from './mail-detail';
-import EmailTextSection from './mail-text';
+import MailClientDetail from './MailClientDetail';
+import EmailTextSection from './EmailTextSection';
 import axios from 'axios';
-import { error } from 'console';
 
 interface Props {
   params: { id: string };

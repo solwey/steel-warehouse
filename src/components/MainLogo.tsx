@@ -6,10 +6,10 @@ export const MainLogoText = ({ href }: { href?: string }) => {
   const link = href ? href : '/';
   return (
     <Link href={link} className="items-center space-x-2 md:flex">
-      <div>
+      <span>
         <Icons.Command />
         <span className="font-bold hidden md:inline-block">{siteConfig.alt_name}</span>
-      </div>
+      </span>
     </Link>
   );
 };
