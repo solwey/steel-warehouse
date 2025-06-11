@@ -1,56 +1,41 @@
 import { NextResponse } from 'next/server';
+import { UrgencyLevel } from '@prisma/client';
 import prisma from '@/lib/db/prisma';
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const groupBy = searchParams.get('groupBy');
-  const urgency = searchParams.get('urgency');
-
-  let whereClause = {};
-  if (urgency) {
-    whereClause = { urgency };
+export async function GET() {
+  try {
+    const items = await prisma.necessaryMaterial.findMany({
+      include: {
+        material: true
+      }
+    });
+    return NextResponse.json(items);
+  } catch (error) {
+    console.error('Error fetching necessary materials:', error);
+    return NextResponse.json({ error: 'Failed to fetch necessary materials' }, { status: 500 });
   }
+}
 
-  const items = await prisma.necessaryMaterial.findMany({
-    where: whereClause,
-    include: {
-      material: true
-    }
-  });
-
-  let grouped: Record<string, typeof items> = {};
-
-  if (groupBy === 'urgency') {
-    grouped = items.reduce(
-      (acc, item) => {
-        acc[item.urgency] = acc[item.urgency] || [];
-        acc[item.urgency].push(item);
-        return acc;
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    const item = await prisma.necessaryMaterial.create({
+      data: {
+        material_id: data.material_id,
+        required_thickness: parseFloat(data.required_thickness),
+        required_width: parseFloat(data.required_width),
+        required_weight: parseFloat(data.required_weight),
+        due_date: new Date(data.due_date),
+        urgency: data.urgency as UrgencyLevel,
+        comment: data.comment
       },
-      {} as Record<string, typeof items>
-    );
-  } else if (groupBy === 'material') {
-    grouped = items.reduce(
-      (acc, item) => {
-        acc[item.material.name] = acc[item.material.name] || [];
-        acc[item.material.name].push(item);
-        return acc;
-      },
-      {} as Record<string, typeof items>
-    );
-  } else if (groupBy === 'due_date') {
-    grouped = items.reduce(
-      (acc, item) => {
-        const dateKey = item.due_date.toISOString().split('T')[0];
-        acc[dateKey] = acc[dateKey] || [];
-        acc[dateKey].push(item);
-        return acc;
-      },
-      {} as Record<string, typeof items>
-    );
-  } else {
-    grouped = { all: items };
+      include: {
+        material: true
+      }
+    });
+    return NextResponse.json(item);
+  } catch (error) {
+    console.error('Error creating necessary material:', error);
+    return NextResponse.json({ error: 'Failed to create necessary material' }, { status: 500 });
   }
-
-  return NextResponse.json(grouped);
 }

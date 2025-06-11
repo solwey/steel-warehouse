@@ -1,10 +1,17 @@
+'use client';
+import * as React from 'react';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/Sheet';
+import { Menu } from 'lucide-react';
 import Link from 'next/link';
 
 import { NavItem } from '@/lib/types/types';
 
 import { Icons } from '@/components/Icons';
 import routes from '@/lib/config/routes';
-import { usePathname } from 'next/navigation';
 
 import {
   DropdownMenu,
@@ -14,7 +21,10 @@ import {
 } from '@/components/ui/DropdownMenu';
 
 export interface NavProps {
-  items?: NavItem[];
+  items: {
+    title: string;
+    link: string;
+  }[];
 }
 
 const MobileNavItem = ({ title, link }: NavItem) => {
@@ -30,21 +40,34 @@ const MobileNavItem = ({ title, link }: NavItem) => {
   );
 };
 
-export const MobileNav = ({ items }: NavProps) => {
+export function MobileNav({ items }: NavProps) {
+  const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
+
   return (
-    <div className="md:hidden">
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Icons.Menu size={34} />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" className="md:hidden">
+          <Menu className="h-6 w-6" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="pr-0">
+        <div className="flex flex-col space-y-3">
           {items.map((item) => (
-            <div key={item.title}>
-              <MobileNavItem title={item.title} link={item.link} />
-            </div>
+            <Link
+              key={item.title}
+              href={item.link}
+              className={cn(
+                'flex w-full items-center py-2 text-sm font-medium transition-colors hover:text-primary',
+                pathname === item.link ? 'text-primary' : 'text-muted-foreground'
+              )}
+              onClick={() => setOpen(false)}
+            >
+              {item.title}
+            </Link>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
-};
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import prisma from '@/lib/db/prisma';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params;

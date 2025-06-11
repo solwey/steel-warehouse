@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EmailStatus } from '@prisma/client';
+import prisma from '@/lib/db/prisma';
 
 export async function GET() {
   const emails = await prisma.incomingEmail.findMany();

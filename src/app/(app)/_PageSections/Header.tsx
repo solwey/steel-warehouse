@@ -4,7 +4,7 @@ import { MainLogoText } from '@/components/MainLogo';
 import { Separator } from '@/components/ui/Separator';
 import { Nav } from '@/components/NavBar';
 import routes from '@/lib/config/routes';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { setAuthenticated } from '@/lib/utils/auth';
 import { useRouter } from 'next/navigation';
 

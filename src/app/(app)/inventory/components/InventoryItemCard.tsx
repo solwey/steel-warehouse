@@ -1,10 +1,23 @@
 'use client';
 
+import React from 'react';
 import { ChemicalCompositionTable } from '@/components/ChemicalCompositionTable';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { InventoryItem as PrismaInventoryItem, Material } from '@prisma/client';
-import { Package, MapPin, Scale, Hash, Calendar, Building2, MessageSquare } from 'lucide-react';
+import {
+  Package,
+  MapPin,
+  Scale,
+  Hash,
+  Calendar,
+  Building2,
+  MessageSquare,
+  Pencil,
+  Trash2
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'react-toastify';
 
 export interface InventoryItem extends PrismaInventoryItem {
   material: Material;
@@ -12,9 +25,32 @@ export interface InventoryItem extends PrismaInventoryItem {
 
 interface Props {
   item: InventoryItem;
+  onEdit: () => void;
 }
 
-export function InventoryItemCard({ item }: Props) {
+export function InventoryItemCard({ item, onEdit }: Props) {
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this item?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/inventory/${item.id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete inventory item');
+      }
+
+      toast.success('Inventory item deleted');
+      // The parent component will handle refreshing the list
+    } catch (error) {
+      toast.error('Failed to delete inventory item');
+      console.error('Error deleting inventory item:', error);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'available':
@@ -40,6 +76,14 @@ export function InventoryItemCard({ item }: Props) {
               <Badge className={getStatusColor(item.status)}>{item.status}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">{item.material.grade}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="icon" onClick={onEdit}>
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleDelete}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 

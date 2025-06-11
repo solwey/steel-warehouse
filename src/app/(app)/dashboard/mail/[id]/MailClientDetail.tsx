@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRandomResponse } from '../../../../../../public/mock-data/response-examples/responses';
 import { toast } from 'react-toastify';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/Icons';
 import { AttachmentsList } from './AttachmentsList';
 

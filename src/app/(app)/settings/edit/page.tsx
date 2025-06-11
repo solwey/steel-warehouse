@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import * as z from 'zod';
 
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/Form';
 
 import { toast } from 'react-toastify';

@@ -7,30 +7,42 @@ import {
 } from '@prisma/client';
 import { ChemicalCompositionTable } from '@/components/ChemicalCompositionTable';
 import { Badge } from '@/components/ui/badge';
-import { Package, Calendar, Ruler, Scale, Hash, MessageSquare } from 'lucide-react';
+import { Package, Calendar, Ruler, Scale, Hash, MessageSquare, Pencil, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'react-toastify';
 
 export interface NecessaryMaterial extends PrismaNecessaryMaterial {
   material: Material;
 }
 
-interface NecessaryMaterialCardProps {
+interface Props {
   item: NecessaryMaterial;
+  onEdit: () => void;
 }
 
-const getUrgencyColor = (urgency: UrgencyLevel) => {
-  switch (urgency.toLowerCase()) {
-    case 'high':
-      return 'bg-red-100 text-red-800';
-    case 'medium':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'low':
-      return 'bg-green-100 text-green-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
+export function NecessaryMaterialCard({ item, onEdit }: Props) {
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this item?')) {
+      return;
+    }
 
-const NecessaryMaterialCard: React.FC<NecessaryMaterialCardProps> = ({ item }) => {
+    try {
+      const response = await fetch(`/api/necessary-materials/${item.id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete necessary material');
+      }
+
+      toast.success('Necessary material deleted');
+      // The parent component will handle refreshing the list
+    } catch (error) {
+      toast.error('Failed to delete necessary material');
+      console.error('Error deleting necessary material:', error);
+    }
+  };
+
   return (
     <Card className="w-full hover:shadow-md transition-shadow">
       <CardContent className="p-6">
@@ -41,6 +53,14 @@ const NecessaryMaterialCard: React.FC<NecessaryMaterialCardProps> = ({ item }) =
               <Badge className={getUrgencyColor(item.urgency)}>{item.urgency}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">{item.material.grade}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="icon" onClick={onEdit}>
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleDelete}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
@@ -115,6 +135,17 @@ const NecessaryMaterialCard: React.FC<NecessaryMaterialCardProps> = ({ item }) =
       </CardContent>
     </Card>
   );
-};
+}
 
-export default NecessaryMaterialCard;
+function getUrgencyColor(urgency: UrgencyLevel) {
+  switch (urgency.toLowerCase()) {
+    case 'high':
+      return 'bg-red-100 text-red-800';
+    case 'medium':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'low':
+      return 'bg-green-100 text-green-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+}
