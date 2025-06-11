@@ -3,6 +3,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils/helpers';
+import { XlsxViewer } from './XlsxViewer';
 
 interface ModalProps {
   title?: string;
@@ -10,16 +11,33 @@ interface ModalProps {
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
+  fileType?: string;
+  fileUrl?: string;
 }
 
-export function Modal({ title, open, onOpenChange, children, className }: ModalProps) {
+export function Modal({
+  title,
+  open,
+  onOpenChange,
+  children,
+  className,
+  fileType,
+  fileUrl
+}: ModalProps) {
+  const renderContent = () => {
+    if (fileType === 'xlsx' && fileUrl) {
+      return <XlsxViewer fileUrl={fileUrl} />;
+    }
+    return children;
+  };
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm" />
         <Dialog.Content
           className={cn(
-            'fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-full max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg bg-white p-6 shadow-lg focus:outline-none dark:bg-zinc-900',
+            'fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg bg-white p-6 shadow-lg focus:outline-none dark:bg-zinc-900',
             className
           )}
         >
@@ -31,7 +49,7 @@ export function Modal({ title, open, onOpenChange, children, className }: ModalP
               </button>
             </Dialog.Close>
           </div>
-          <div>{children}</div>
+          <div>{renderContent()}</div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

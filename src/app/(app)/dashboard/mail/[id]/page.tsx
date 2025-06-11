@@ -7,6 +7,7 @@ import { GoFileZip } from 'react-icons/go';
 import { FaRegFile } from 'react-icons/fa';
 import MailClientDetail from './MailClientDetail';
 import EmailTextSection from './EmailTextSection';
+import { AttachmentsList } from './AttachmentsList';
 import axios from 'axios';
 
 interface Props {
@@ -46,11 +47,7 @@ export default async function MailDetailPage({ params }: Props) {
 
   const filePath = path.join(process.cwd(), 'public/mock-data/income-mails', `${id}.eml`);
   const attachmentsDir = path.join(process.cwd(), 'public/eml-attachments', id);
-  const responseDir = path.join(
-    process.cwd(),
-    'public/mock-data/response-examples',
-    `response-${id}`
-  );
+  const responseDir = path.join(process.cwd(), 'public/eml-attachments', `response-${id}`);
 
   const baseUrl = process.env.NEXT_PUBLIC_DOMAIN || 'http://localhost:3000';
   const response = await axios.get(`${baseUrl}/api/mails/${id}`);
@@ -79,12 +76,17 @@ export default async function MailDetailPage({ params }: Props) {
         .filter((file) => /\.(xls|xlsx)$/i.test(file))
         .map((file) => ({
           filename: file,
-          url: `public/mock-data/response-examples/response-${id}/${file}`
+          url: `public/eml-attachments/response-${id}/${file}`
         }));
     } catch (error) {
       console.error('Error reading response directory:', error);
       excelFiles = [];
     }
+
+    const serializableAttachments = mail.attachments.map((att) => ({
+      filename: att.filename || '',
+      contentType: att.contentType
+    }));
 
     return (
       <div className="p-6 max-w-3xl">
@@ -100,42 +102,7 @@ export default async function MailDetailPage({ params }: Props) {
           <EmailTextSection text={cleanEmailText(mail.text ?? '[No content]')} />
         </div>
         {mail.attachments.length > 0 && (
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold mb-4">Attachments</h2>
-            <div className="flex flex-row flex-wrap gap-4">
-              {mail.attachments.map((att, idx) => {
-                const filename = att.filename || `file-${idx}`;
-                const fileUrl = `/eml-attachments/${id}/${filename}`;
-                const isImage = att.contentType.startsWith('image/');
-                const extension = filename.split('.').pop() || '';
-                const icon = getFileTypeIcon(extension);
-
-                return (
-                  <a
-                    key={idx}
-                    href={fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center w-28 h-28 rounded-lg border border-gray-200 shadow hover:bg-gray-100 transition cursor-pointer p-2 group"
-                    title={filename}
-                  >
-                    <div className="flex-1 flex items-center justify-center w-full">
-                      {isImage ? (
-                        <img
-                          src={fileUrl}
-                          alt={filename}
-                          className="object-cover w-12 h-12 rounded"
-                        />
-                      ) : (
-                        <div className="text-4xl">{icon}</div>
-                      )}
-                    </div>
-                    <div className="mt-2 w-full text-xs text-center truncate">{filename}</div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
+          <AttachmentsList attachments={serializableAttachments} mailId={id} />
         )}
 
         <div className="border-t pt-4 mt-4">

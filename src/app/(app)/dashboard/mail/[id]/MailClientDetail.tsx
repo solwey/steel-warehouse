@@ -4,11 +4,11 @@ import { EmailStatus } from '@prisma/client';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PiMicrosoftExcelLogoLight } from 'react-icons/pi';
 import { getRandomResponse } from '../../../../../../public/mock-data/response-examples/responses';
 import { toast } from 'react-toastify';
 import { Button } from '@/components/ui/Button';
 import { Icons } from '@/components/Icons';
+import { AttachmentsList } from './AttachmentsList';
 
 interface Props {
   id: string;
@@ -17,11 +17,17 @@ interface Props {
   response?: string;
 }
 
-export default function MailClientDetail({ id, status, excelFiles, response }: Props) {
+export default function MailClientDetail({
+  id,
+  status,
+  excelFiles: initialExcelFiles,
+  response
+}: Props) {
   const router = useRouter();
   const suggestedReply = response ?? getRandomResponse();
   const [reply, setReply] = useState(suggestedReply);
   const [loading, setLoading] = useState(false);
+  const [excelFiles, setExcelFiles] = useState(initialExcelFiles);
 
   useEffect(() => {
     if (status === EmailStatus.UNREADED) {
@@ -51,6 +57,10 @@ export default function MailClientDetail({ id, status, excelFiles, response }: P
     }
   };
 
+  const handleAttachmentsChange = (newAttachments: { filename: string; url: string }[]) => {
+    setExcelFiles(newAttachments);
+  };
+
   return (
     <div className="mt-8 max-w-3xl">
       {status === EmailStatus.PROCESSED ? (
@@ -68,28 +78,13 @@ export default function MailClientDetail({ id, status, excelFiles, response }: P
         />
       )}
 
-      {excelFiles.length > 0 && (
-        <div className="mt-6">
-          <h3 className="font-semibold text-lg mb-3">Selected Excel files</h3>
-          <div className="flex flex-wrap gap-4">
-            {excelFiles.map(({ filename, url }, idx) => (
-              <a
-                key={idx}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center w-28 h-28 rounded-lg border border-gray-200 shadow hover:bg-gray-100 transition cursor-pointer p-2 group"
-                title={filename}
-              >
-                <div className="flex-1 flex items-center justify-center w-full text-4xl">
-                  <PiMicrosoftExcelLogoLight />
-                </div>
-                <div className="mt-2 w-full text-xs text-center truncate">{filename}</div>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      <AttachmentsList
+        replyAttachments={excelFiles}
+        mailId={id}
+        title="Selected Excel files"
+        onAttachmentsChange={handleAttachmentsChange}
+      />
+
       <Button
         disabled={loading || status === EmailStatus.PROCESSED}
         className="w-full mt-2"
