@@ -7,7 +7,6 @@ interface ChemicalCompositionTableProps {
 export function ChemicalCompositionTable({ composition }: ChemicalCompositionTableProps) {
   return (
     <div className="text-sm mt-2">
-      <p className="font-semibold mb-1">Required chemical composition:</p>
       <table className="w-full border-collapse">
         <thead>
           <tr>
