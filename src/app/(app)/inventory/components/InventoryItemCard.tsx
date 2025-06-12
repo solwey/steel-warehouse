@@ -50,7 +50,6 @@ export function InventoryItemCard({ item, onEdit }: Props) {
       }
 
       toast.success('Inventory item deleted');
-      // The parent component will handle refreshing the list
     } catch (error) {
       toast.error('Failed to delete inventory item');
       console.error('Error deleting inventory item:', error);

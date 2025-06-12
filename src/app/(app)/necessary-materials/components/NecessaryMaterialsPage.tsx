@@ -42,7 +42,6 @@ export function NecessaryMaterialsPage({ initialItems, materials }: NecessaryMat
   });
 
   const handleSuccess = () => {
-    // Refresh the items list
     fetch('/api/necessary-materials')
       .then((res) => res.json())
       .then((data) => setItems(data))

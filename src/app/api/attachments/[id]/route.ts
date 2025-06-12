@@ -5,7 +5,7 @@ import prisma from '@/lib/db/prisma';
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
     const filename = searchParams.get('filename');
 

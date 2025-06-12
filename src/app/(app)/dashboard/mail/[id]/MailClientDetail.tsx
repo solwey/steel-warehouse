@@ -28,6 +28,7 @@ export default function MailClientDetail({
   const [reply, setReply] = useState(suggestedReply);
   const [loading, setLoading] = useState(false);
   const [excelFiles, setExcelFiles] = useState(initialExcelFiles);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (status === EmailStatus.UNREADED) {
@@ -61,6 +62,20 @@ export default function MailClientDetail({
     setExcelFiles(newAttachments);
   };
 
+  const handleRegenerateFiles = async () => {
+    setIsLoading(true);
+    try {
+      await axios.post(`/api/mails/${id}/regenerate`);
+      const response = await axios.get(`/api/mails/${id}/response-files`);
+      setExcelFiles(response.data);
+      router.refresh();
+    } catch (error) {
+      console.error('Error regenerating files:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="mt-8 max-w-3xl">
       {status === EmailStatus.PROCESSED ? (
@@ -83,6 +98,8 @@ export default function MailClientDetail({
         mailId={id}
         title="Selected Excel files"
         onAttachmentsChange={handleAttachmentsChange}
+        handleRegenerateFiles={handleRegenerateFiles}
+        isRegenerateLoading={isLoading}
       />
 
       <Button

@@ -7,6 +7,7 @@ import { FaRegFile } from 'react-icons/fa';
 import { Modal } from '@/components/Modal';
 import { Download, Upload, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { Button } from '@/components/ui/button';
 
 interface Attachment {
   filename: string;
@@ -24,6 +25,8 @@ interface AttachmentsListProps {
   mailId: string;
   title?: string;
   onAttachmentsChange?: (attachments: ReplyAttachment[]) => void;
+  handleRegenerateFiles?: () => void;
+  isRegenerateLoading?: boolean;
 }
 
 function getFileTypeIcon(extension: string) {
@@ -47,7 +50,9 @@ export function AttachmentsList({
   replyAttachments = [],
   mailId,
   title = 'Attachments',
-  onAttachmentsChange
+  onAttachmentsChange,
+  handleRegenerateFiles,
+  isRegenerateLoading = false
 }: AttachmentsListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{ url: string; filename: string } | null>(null);
@@ -102,7 +107,6 @@ export function AttachmentsList({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if file is an Excel file
     const extension = file.name.split('.').pop()?.toLowerCase();
     if (extension !== 'xlsx' && extension !== 'xls') {
       toast.error('Please upload only Excel files');
@@ -214,13 +218,16 @@ export function AttachmentsList({
                 accept=".xlsx,.xls"
                 className="hidden"
               />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              <Button
+                onClick={handleRegenerateFiles}
+                disabled={isRegenerateLoading}
+                variant="outline"
               >
-                <Upload className="h-4 w-4" />
-                Upload Excel
-              </button>
+                Regenerate Response Files
+              </Button>
+              <Button onClick={() => fileInputRef.current?.click()}>
+                <Upload className="h-4 w-4 mr-4" /> Upload Excel
+              </Button>
             </div>
           )}
         </div>

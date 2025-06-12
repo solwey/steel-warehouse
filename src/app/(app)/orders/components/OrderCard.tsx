@@ -88,14 +88,22 @@ export function OrderCard({ order, onUpdate }: OrderCardProps) {
         <CardContent className="p-6">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center justify-between gap-3 mb-2">
                 <h3 className="font-semibold text-xl">
                   {order.material.name} - {order.order_number}
                 </h3>
-                <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                <Badge className={getPaymentStatusColor(order.payment_status)}>
-                  {order.payment_status}
-                </Badge>
+              </div>
+              <div className="flex gap-4 my-2">
+                <div className="flex items-center gap-2">
+                  Order status:
+                  <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  Payment status:
+                  <Badge className={getPaymentStatusColor(order.payment_status)}>
+                    {order.payment_status}
+                  </Badge>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

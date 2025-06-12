@@ -44,7 +44,6 @@ export function InventoryPage({ initialItems, materials }: InventoryPageProps) {
   });
 
   const handleSuccess = () => {
-    // Refresh the items list
     fetch('/api/inventory')
       .then((res) => res.json())
       .then((data) => setItems(data))

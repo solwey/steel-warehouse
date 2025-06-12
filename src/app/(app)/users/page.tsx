@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { User } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import Loading from '@/app/loading';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -45,7 +46,7 @@ export default function UsersPage() {
       </div>
 
       {loading ? (
-        <p>Loading users...</p>
+        <Loading />
       ) : users.length === 0 ? (
         <p>No users found.</p>
       ) : (

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { NecessaryMaterialsPage } from './components/NecessaryMaterialsPage';
 import { Material, NecessaryMaterial } from '@prisma/client';
+import Loading from '@/app/loading';
 
 export default function Page() {
   const [items, setItems] = useState<(NecessaryMaterial & { material: Material })[]>([]);
@@ -30,11 +31,7 @@ export default function Page() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return <NecessaryMaterialsPage initialItems={items} materials={materials} />;

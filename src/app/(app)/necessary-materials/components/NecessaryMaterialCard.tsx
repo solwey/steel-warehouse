@@ -52,7 +52,6 @@ export function NecessaryMaterialCard({ item, onEdit }: Props) {
       }
 
       toast.success('Necessary material deleted');
-      // The parent component will handle refreshing the list
     } catch (error) {
       toast.error('Failed to delete necessary material');
       console.error('Error deleting necessary material:', error);

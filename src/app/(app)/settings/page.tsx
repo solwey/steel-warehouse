@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { User } from '@prisma/client';
 import { toast } from 'react-toastify';
 import { getUser } from '@/lib/utils/auth';
+import Loading from '@/app/loading';
 
 export default function SettingsPage() {
   const [user, setUser] = useState<Partial<User> | null>(null);
@@ -31,7 +32,7 @@ export default function SettingsPage() {
       </p>
 
       {loading ? (
-        <p>Loading...</p>
+        <Loading />
       ) : !user ? (
         <p>Failed to load user data.</p>
       ) : (

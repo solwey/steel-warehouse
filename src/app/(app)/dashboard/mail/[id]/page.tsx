@@ -9,6 +9,9 @@ import MailClientDetail from './MailClientDetail';
 import EmailTextSection from './EmailTextSection';
 import { AttachmentsList } from './AttachmentsList';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
+import prisma from '@/lib/db/prisma';
+import { isMatchingMaterial } from '@/lib/constants/materialMappings';
 
 interface Props {
   params: { id: string };
@@ -16,30 +19,24 @@ interface Props {
 
 function cleanEmailText(text: string): string {
   return text
-    .split('\n')
-    .map((line) => line.trimEnd())
-    .filter((line, idx, arr) => {
-      const isEmpty = line.trim() === '';
-      const isPrevEmpty = idx > 0 && arr[idx - 1].trim() === '';
-      return !isEmpty || !isPrevEmpty;
-    })
-    .join('\n');
+    .replace(/\r\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
-function getFileTypeIcon(extension: string) {
-  switch (extension.toLowerCase()) {
-    case 'doc':
-    case 'docx':
-      return <PiMicrosoftWordLogoLight />;
-    case 'xls':
-    case 'xlsx':
-      return <PiMicrosoftExcelLogoLight />;
-    case 'zip':
-    case 'rar':
-      return <GoFileZip />;
-    default:
-      return <FaRegFile />;
+function getRandomInt(min: number, max: number): number {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
   }
+  return newArray;
 }
 
 export default async function MailDetailPage({ params }: Props) {
@@ -57,8 +54,20 @@ export default async function MailDetailPage({ params }: Props) {
     const content = await fs.readFile(filePath, 'utf-8');
     const mail = await simpleParser(content);
 
+    const necessaryMaterials = await prisma.necessaryMaterial.findMany({
+      select: {
+        material: {
+          select: {
+            name: true,
+            grade: true
+          }
+        }
+      }
+    });
+
     if (mail.attachments.length > 0) {
       await fs.mkdir(attachmentsDir, { recursive: true });
+      await fs.mkdir(responseDir, { recursive: true });
 
       for (const attachment of mail.attachments) {
         if (!attachment.filename) continue;
@@ -66,6 +75,83 @@ export default async function MailDetailPage({ params }: Props) {
         const fileBuffer = attachment.content;
         const filePath = path.join(attachmentsDir, attachment.filename);
         await fs.writeFile(filePath, fileBuffer);
+
+        const extension = attachment.filename.split('.').pop()?.toLowerCase();
+        if (extension === 'xlsx' || extension === 'xls') {
+          try {
+            const workbook = XLSX.read(fileBuffer);
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+
+            const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+
+            if (data.length > 0) {
+              const headerRow = data[0];
+
+              const possibleNameColumns = headerRow
+                .map((header: string, index: number) => ({
+                  index,
+                  header: String(header || '').toLowerCase()
+                }))
+                .filter(
+                  (col) =>
+                    col.header.includes('name') ||
+                    col.header.includes('material') ||
+                    col.header.includes('type') ||
+                    col.header.includes('description')
+                );
+
+              const possibleGradeColumns = headerRow
+                .map((header: string, index: number) => ({
+                  index,
+                  header: String(header || '').toLowerCase()
+                }))
+                .filter(
+                  (col) =>
+                    col.header.includes('grade') ||
+                    col.header.includes('spec') ||
+                    col.header.includes('standard') ||
+                    col.header.includes('class')
+                );
+
+              const allMatchingRows = data.slice(1).filter((row) => {
+                const nameMatches = possibleNameColumns.some((col) => {
+                  const value = String(row[col.index] || '').toLowerCase();
+                  return necessaryMaterials.some(
+                    (nm) => isMatchingMaterial(value, '') || isMatchingMaterial('', value)
+                  );
+                });
+
+                const gradeMatches = possibleGradeColumns.some((col) => {
+                  const value = String(row[col.index] || '').toLowerCase();
+                  return necessaryMaterials.some(
+                    (nm) => isMatchingMaterial('', value) || isMatchingMaterial(value, '')
+                  );
+                });
+
+                return nameMatches || gradeMatches;
+              });
+
+              if (allMatchingRows.length > 0) {
+                const numRowsToSelect = getRandomInt(5, Math.min(8, allMatchingRows.length));
+                const shuffledRows = shuffleArray(allMatchingRows);
+                const selectedRows = shuffledRows.slice(0, numRowsToSelect);
+
+                const filteredData = [headerRow, ...selectedRows];
+
+                const newWorkbook = XLSX.utils.book_new();
+                const newWorksheet = XLSX.utils.aoa_to_sheet(filteredData);
+                XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, firstSheetName);
+
+                const responseFilePath = path.join(responseDir, attachment.filename);
+                const newBuffer = XLSX.write(newWorkbook, { type: 'buffer', bookType: extension });
+                await fs.writeFile(responseFilePath, newBuffer);
+              }
+            }
+          } catch (error) {
+            console.error(`Error processing Excel file ${attachment.filename}:`, error);
+          }
+        }
       }
     }
 
