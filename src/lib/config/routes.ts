@@ -3,6 +3,7 @@ const routes = {
     { title: 'Dashboard', link: '/dashboard' },
     { title: 'Inventory', link: '/inventory' },
     { title: 'Necessary Materials', link: '/necessary-materials' },
+    { title: 'Orders', link: '/orders' },
     { title: 'Users', link: '/users' },
     { title: 'Settings', link: '/settings' }
   ],

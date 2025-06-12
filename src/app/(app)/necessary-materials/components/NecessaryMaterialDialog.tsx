@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import {
   Select,
   SelectContent,
@@ -141,7 +141,7 @@ export function NecessaryMaterialDialog({
                 id="required_thickness"
                 type="number"
                 step="0.01"
-                {...(register('required_thickness'), { valueAsNumber: true })}
+                {...register('required_thickness', { valueAsNumber: true })}
                 defaultValue={watch('required_thickness') || ''}
               />
               {errors.required_thickness && (
@@ -155,7 +155,7 @@ export function NecessaryMaterialDialog({
                 id="required_width"
                 type="number"
                 step="0.01"
-                {...(register('required_width'), { valueAsNumber: true })}
+                {...register('required_width', { valueAsNumber: true })}
                 defaultValue={watch('required_width') || ''}
               />
               {errors.required_width && (
@@ -170,7 +170,7 @@ export function NecessaryMaterialDialog({
               id="required_weight"
               type="number"
               step="0.01"
-              {...(register('required_weight'), { valueAsNumber: true })}
+              {...register('required_weight', { valueAsNumber: true })}
               defaultValue={watch('required_weight') || ''}
             />
             {errors.required_weight && (
