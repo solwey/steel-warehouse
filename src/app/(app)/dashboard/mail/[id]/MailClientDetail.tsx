@@ -24,7 +24,7 @@ export default function MailClientDetail({
   response
 }: Props) {
   const router = useRouter();
-  const suggestedReply = response ?? getRandomResponse();
+  const suggestedReply = response ? response : getRandomResponse();
   const [reply, setReply] = useState(suggestedReply);
   const [loading, setLoading] = useState(false);
   const [excelFiles, setExcelFiles] = useState(initialExcelFiles);
@@ -77,7 +77,7 @@ export default function MailClientDetail({
   };
 
   return (
-    <div className="mt-8 max-w-3xl">
+    <div className="max-w-3xl">
       {status === EmailStatus.PROCESSED ? (
         <p className="w-full p-3 border border-gray-300 rounded-md bg-gray-50 text-gray-700 whitespace-pre-line">
           {reply}
